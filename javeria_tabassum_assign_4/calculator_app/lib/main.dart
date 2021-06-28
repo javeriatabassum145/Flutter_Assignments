@@ -1,179 +1,203 @@
 import 'package:flutter/material.dart';
+import 'buttons.dart';
+import 'package:math_expressions/math_expressions.dart';
 
-void main() => runApp(new MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Flutter Demo',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: new MyHomePage(title: 'Calculator'),
-    );
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: HomePage(),
+    ); // MaterialApp
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
+class HomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
+  var userInput = '';
+  var answer = '';
 
-  String output = "0";
-
-  String _output = "0";
-  double num1 = 0.0;
-  double num2 = 0.0;
-  String operand = "";
-
-  buttonPressed(String buttonText){
-
-    if(buttonText == "CLEAR"){
-
-      _output = "0";
-      num1 = 0.0;
-      num2 = 0.0;
-      operand = "";
-
-    } else if (buttonText == "+" || buttonText == "-" || buttonText == "/" || buttonText == "X"){
-
-      num1 = double.parse(output);
-
-      operand = buttonText;
-
-      _output = "0";
-
-    } else if(buttonText == "."){
-
-      if(_output.contains(".")){
-        print("Already conatains a decimals");
-        return;
-
-      } else {
-        _output = _output + buttonText;
-      }
-
-    } else if (buttonText == "="){
-
-      num2 = double.parse(output);
-
-      if(operand == "+"){
-        _output = (num1 + num2).toString();
-      }
-      if(operand == "-"){
-        _output = (num1 - num2).toString();
-      }
-      if(operand == "X"){
-        _output = (num1 * num2).toString();
-      }
-      if(operand == "/"){
-        _output = (num1 / num2).toString();
-      }
-
-      num1 = 0.0;
-      num2 = 0.0;
-      operand = "";
-
-    } else {
-
-      _output = _output + buttonText;
-
-    }
-
-    print(_output);
-
-    setState(() {
-
-      output = double.parse(_output).toStringAsFixed(2);
-
-    });
-
-  }
-
-  Widget buildButton(String buttonText) {
-    return new Expanded(
-      child: new OutlineButton(
-        padding: new EdgeInsets.all(24.0),
-        child: new Text(buttonText,
-          style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold
-          ),
-        ),
-        onPressed: () =>
-            buttonPressed(buttonText)
-        ,
-      ),
-    );
-  }
+// Array of button
+  final List<String> buttons = [
+    'C',
+    '+/-',
+    '%',
+    'DEL',
+    '7',
+    '8',
+    '9',
+    '/',
+    '4',
+    '5',
+    '6',
+    'x',
+    '1',
+    '2',
+    '3',
+    '-',
+    '0',
+    '.',
+    '=',
+    '+',
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(widget.title),
-        ),
-        body: new Container(
-            child: new Column(
-              children: <Widget>[
-                new Container(
-                    alignment: Alignment.centerRight,
-                    padding: new EdgeInsets.symmetric(
-                        vertical: 24.0,
-                        horizontal: 12.0
+    return Scaffold(
+      appBar: new AppBar(
+        title: new Text("Calculator"),
+      ), //AppBar
+      backgroundColor: Colors.white38,
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        userInput,
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
                     ),
-                    child: new Text(output, style: new TextStyle(
-                      fontSize: 48.0,
-                      fontWeight: FontWeight.bold,
-
-                    ))),
-                new Expanded(
-                  child: new Divider(),
-                ),
-
-
-                new Column(children: [
-                  new Row(children: [
-                    buildButton("7"),
-                    buildButton("8"),
-                    buildButton("9"),
-                    buildButton("/")
+                    Container(
+                      padding: EdgeInsets.all(15),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        answer,
+                        style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    )
                   ]),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              child: GridView.builder(
+                  itemCount: buttons.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4),
+                  itemBuilder: (BuildContext context, int index) {
+                    // Clear Button
+                    if (index == 0) {
+                      return MyButton(
+                        buttontapped: () {
+                          setState(() {
+                            userInput = '';
+                            answer = '0';
+                          });
+                        },
+                        buttonText: buttons[index],
+                        color: Colors.blue[50],
+                        textColor: Colors.black,
+                      );
+                    }
 
-                  new Row(children: [
-                    buildButton("4"),
-                    buildButton("5"),
-                    buildButton("6"),
-                    buildButton("X")
-                  ]),
+                    // +/- button
+                    else if (index == 1) {
+                      return MyButton(
+                        buttonText: buttons[index],
+                        color: Colors.blue[50],
+                        textColor: Colors.black,
+                      );
+                    }
+                    // % Button
+                    else if (index == 2) {
+                      return MyButton(
+                        buttontapped: () {
+                          setState(() {
+                            userInput += buttons[index];
+                          });
+                        },
+                        buttonText: buttons[index],
+                        color: Colors.blue[50],
+                        textColor: Colors.black,
+                      );
+                    }
+                    // Delete Button
+                    else if (index == 3) {
+                      return MyButton(
+                        buttontapped: () {
+                          setState(() {
+                            userInput =
+                                userInput.substring(0, userInput.length - 1);
+                          });
+                        },
+                        buttonText: buttons[index],
+                        color: Colors.blue[50],
+                        textColor: Colors.black,
+                      );
+                    }
+                    // Equal_to Button
+                    else if (index == 18) {
+                      return MyButton(
+                        buttontapped: () {
+                          setState(() {
+                            equalPressed();
+                          });
+                        },
+                        buttonText: buttons[index],
+                        color: Colors.orange[700],
+                        textColor: Colors.white,
+                      );
+                    }
 
-                  new Row(children: [
-                    buildButton("1"),
-                    buildButton("2"),
-                    buildButton("3"),
-                    buildButton("-")
-                  ]),
+                    // other buttons
+                    else {
+                      return MyButton(
+                        buttontapped: () {
+                          setState(() {
+                            userInput += buttons[index];
+                          });
+                        },
+                        buttonText: buttons[index],
+                        color: isOperator(buttons[index])
+                            ? Colors.blueAccent
+                            : Colors.white,
+                        textColor: isOperator(buttons[index])
+                            ? Colors.white
+                            : Colors.black,
+                      );
+                    }
+                  }), // GridView.builder
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-                  new Row(children: [
-                    buildButton("."),
-                    buildButton("0"),
-                    buildButton("00"),
-                    buildButton("+")
-                  ]),
+  bool isOperator(String x) {
+    if (x == '/' || x == 'x' || x == '-' || x == '+' || x == '=') {
+      return true;
+    }
+    return false;
+  }
 
-                  new Row(children: [
-                    buildButton("CLEAR"),
-                    buildButton("="),
-                  ])
-                ])
-              ],
-            )));
+// function to calculate the input operation
+  void equalPressed() {
+    String finaluserinput = userInput;
+    finaluserinput = userInput.replaceAll('x', '*');
+
+    Parser p = Parser();
+    Expression exp = p.parse(finaluserinput);
+    ContextModel cm = ContextModel();
+    double eval = exp.evaluate(EvaluationType.REAL, cm);
+    answer = eval.toString();
   }
 }
